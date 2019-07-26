@@ -1,5 +1,5 @@
-#include "DictProducer.h"
-#include "SplitTool.h"
+#include "../include/DictProducer.h"
+#include "../include/SplitTool.h"
 
 #include <string.h>
 #include <sys/types.h>

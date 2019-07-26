@@ -9,7 +9,7 @@ namespace  wd
 class Configuration
 {
 public:
-    Configuration(const string & filepath = "../data");
+    Configuration(const string & filepath = "../conf/en.bat");
     ~Configuration(){}
     
     map<string, string> & getConfigMap();

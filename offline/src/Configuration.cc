@@ -1,4 +1,4 @@
-#include "Configuration.h"
+#include "../include/Configuration.h"
 
 #include <sys/types.h>
 #include <dirent.h>

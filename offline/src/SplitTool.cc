@@ -1,6 +1,6 @@
-#include "SplitTool.h"
+#include "../include/SplitTool.h"
 
-#include "Configuration.h"
+#include "../include/Configuration.h"
 
 namespace wd
 {

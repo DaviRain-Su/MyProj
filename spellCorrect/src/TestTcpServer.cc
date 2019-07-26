@@ -1,5 +1,6 @@
 #include "../include/Threadpool.h"
 #include "../include/TcpServer.h"
+#include "Configuration.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -8,7 +9,7 @@
 #include <fstream>
 
 using namespace std;
-
+using namespace wd;
 wd::Threadpool * gThreadpool = nullptr;
 
 class Task
@@ -83,18 +84,14 @@ void onClose(const wd::TcpConnectionPtr & conn)
 
 int main(void)
 {
+    Configuration *conf = Configuration::getInstance();
+    
 	wd::Threadpool threadpool(4, 10); 
 	threadpool.start();
 	
 	gThreadpool = &threadpool;
    
-    string ip;
-    string port;
-    string datafFile;
     //配置文件
-    string ConfigFileName = "../conf";
-    ifstream in(ConfigFileName);
-    string line;
 
 
 

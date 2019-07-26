@@ -1,4 +1,4 @@
-#include "Configuration.h"
+#include "../include/Configuration.h"
 
 #include <iostream>
 #include <map>

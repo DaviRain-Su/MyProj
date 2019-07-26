@@ -1,29 +1,22 @@
 #pragma once
 #include <string>
+#include <map>
 using std::string;
+using std::map;
 namespace  wd
 {
 
 class Configuration
 {
 public:
-    Configuration(const string & confName = "../conf");
+    Configuration(const string & filepath = "../conf/en.bat");
     ~Configuration(){}
     
-//    const string& getconf() { return _confName; }
-
-    const string& ip() const{ return _ip; };
-    int port();
-    
-    const string& datafileName()  const {return _datafile;};
-
+    map<string, string> & getConfigMap();
 private:
-    void establish();
-    
-    const string & _confName;
-    string _ip;
-    string _port;
-    string _datafile;
+    //void getDir(char * path);
+    string _filepath;
+    map<string, string> _configMap;
 };
 
 }
