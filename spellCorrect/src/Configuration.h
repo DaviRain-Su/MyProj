@@ -35,16 +35,30 @@ private:
     void establish();
     ~Configuration(){};
 public:
-    static Configuration *getInstance();
+    static Configuration *getInstance(const string & confilename = "../conf/my.bat");
     map<string, string> & getConfigMap()
     { return _configMap; }
+    string ip();
+    int port();
+    string enDcitPpath();
+    string enIndexPath();
+    string znDictPath();
+    string znIndexPath();
+    string cachePath();
+    int threadNum();
+    int bufSize();
+    int initSize();
+    int initTime();
+    int updateTime();
+
 private:
     string _filepath;
     map<string, string> _configMap;
     static mutex m_mutex;
-    static Configuration * m_instance;
+    //static MutexLock _mutex;
+    //static Configuration * m_instance;
     static AutoRelease autorelase;
     //改进之后
-    //static std::atomic<Configuration*> m_instance;
+    static std::atomic<Configuration*> m_instance;
 };
 }

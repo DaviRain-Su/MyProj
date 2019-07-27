@@ -26,6 +26,8 @@ using namespace std::experimental;
 #include <log4cpp/PatternLayout.hh>
 
 using namespace log4cpp;
+namespace  wd{
+
 class Mylog
 {
 public:
@@ -131,3 +133,4 @@ void logDebug(const char *msg,const source_location& location = source_location:
     log->Debug(tempMsg.c_str());
 }
 
+}

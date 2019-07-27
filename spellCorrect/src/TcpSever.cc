@@ -6,7 +6,9 @@ namespace wd
 TcpServer::TcpServer(const string & ip, unsigned short port)
 : _acceptor(ip, port)
 , _loop(_acceptor)
-    {}
+    {
+        std::cout << "TcpServer()" << std::endl;
+    }
 
 
 void TcpServer::start()

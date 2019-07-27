@@ -1,6 +1,6 @@
 #include "../include/Threadpool.h"
 #include "../include/TcpServer.h"
-#include "Configuration.h"
+#include "../include/Configuration.h"
 
 #include <unistd.h>
 #include <stdio.h>
