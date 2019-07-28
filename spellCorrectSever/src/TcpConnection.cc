@@ -36,7 +36,9 @@ string TcpConnection::receive()
 	char buff[65536] = {0};
     int ret = _socketIo.readline(buff, sizeof(buff));
 //    cout << ">> ret = " << ret << endl;
-	return string(buff);
+	//去掉接受到的末尾的换行符
+    buff[strlen(buff)-1] = '\0';
+    return string(buff);
 }
 	
 void TcpConnection::send(const string & msg)

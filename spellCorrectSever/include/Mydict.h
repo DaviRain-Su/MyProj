@@ -28,7 +28,11 @@ public:
     void init();
     vector<pair<string, int>> & getDict();//获取词典
     map<string, set<int>> & getIndecTable();//获取索引表
-
+#if 1
+    void show_dict() const;
+    void show_index() const;
+    void show_path() const;
+#endif
 private:
     Mydict(const string & conffilePath = "../conf/my.bat");
     ~Mydict(){}

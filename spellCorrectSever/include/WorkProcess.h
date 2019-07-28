@@ -42,12 +42,12 @@ public:
         bool operator()(const MyResult & lhs, const MyResult & rhs)
         {
             //return lhs._eidt_vaule < rhs._eidt_vaule;i
-            if(lhs._eidt_vaule < rhs._eidt_vaule)
+            if(lhs._eidt_vaule > rhs._eidt_vaule)
             {
                 return true;
             }else if(lhs._eidt_vaule == rhs._eidt_vaule)
             {
-                if(lhs._frequency > rhs._frequency)
+                if(lhs._frequency <  rhs._frequency)
                 {
                     return true;
                 }

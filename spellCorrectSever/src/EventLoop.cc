@@ -100,6 +100,7 @@ void EventLoop::handleNewConnection()
 
     _conns.insert(std::make_pair(peerfd, conn));
     //这个下面这个是干什么的那？
+    //printf("**************\n");
     conn->handleConnectionCallback();
 
 }

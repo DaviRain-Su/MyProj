@@ -54,11 +54,15 @@ public:
 private:
     string _filepath;
     map<string, string> _configMap;
-    static mutex m_mutex;
-    //static MutexLock _mutex;
-    //static Configuration * m_instance;
     static AutoRelease autorelase;
+#if 0
+    static MutexLock _mutex;
+    static Configuration * m_instance;
+#endif
     //改进之后
+#if 1
+    static mutex m_mutex;
     static std::atomic<Configuration*> m_instance;
+#endif
 };
 }

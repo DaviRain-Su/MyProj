@@ -19,13 +19,44 @@ Mydict::Mydict(const string & conffilePath )
 , _cnindexpath(Configuration::getInstance(conffilePath)->znIndexPath())
     {
         init();
+        show_path();   
+#if 0
+        show_dict();
+        show_index();
+#endif
     }
 
 vector<pair<string, int>> & Mydict::getDict()
 {
     return _dict;
 }
-
+#if 1
+void Mydict::show_path()const
+{
+    std::cout << _endictpath << std::endl;
+    std::cout << _endindexpath << std::endl;
+    std::cout << _cndictpath << std::endl;
+    std::cout << _cnindexpath << std::endl;
+}
+void Mydict::show_dict() const
+{
+    for(auto iter = _dict.begin(); iter != _dict.end(); ++iter)
+        std::cout << iter->first  << iter->second << std::endl;
+    std::cout << std::endl;
+}
+void Mydict::show_index() const
+{
+    for(auto iter = _index_table.begin(); iter != _index_table.end(); ++iter)
+    {
+        std::cout << iter->first << " ";
+        for (auto &elem : iter->second)
+        {
+            std::cout << elem << std::endl;
+        }
+        std::cout << std::endl;
+    }
+}
+#endif
 map<string, set<int>> & Mydict::getIndecTable()
 {
     return _index_table;
@@ -95,8 +126,11 @@ void Mydict::init(){
 
     while(std::getline(in, line)){
         std::istringstream record(line);
-        record >> key >> val;
-        _index_table[key].insert(std::stoi(val));
+        record >> key;
+        while(record >> val)
+        {
+             _index_table[key].insert(std::stoi(val));
+        }
     }
     in.close();
 

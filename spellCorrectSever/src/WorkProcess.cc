@@ -14,27 +14,52 @@ void WorkProcess::queryIndexTable()
 {
     string response = _queryWord;
     map<string, set<int>> hash_table = Mydict::getInstance()->getIndecTable();
+#if 0
+    std::cout << "hash_table size = " << hash_table.size() << std::endl;
+    std::cout << "hash_table---second size = " << hash_table["a"].size() << std::endl;
+    for(auto iter = hash_table.begin(); iter != hash_table.end();++iter)
+        std::cout << "hash_table---second size = " << iter->second.size() << std::endl;
+#endif
     for(auto & ch : _queryWord)
     {
         for(auto iter = hash_table.begin(); iter != hash_table.end(); ++iter)
         {
+#if 0
+            printf("*****************\n");
+#endif
             //英文的一个单词的字符和hash_table中的第一个key值进行比较
-            if(string(1,ch) == iter->first)
+            string tmp_char(1, ch);
+            std::cout << iter->first << std::endl;
+            if(tmp_char == iter->first)
             {
+
+                std::cout << "===" <<  iter->first << std::endl;
                 auto insertIn = _result_word_indexs.end();
-                auto Input_first = iter->second.cbegin();
-                auto Input_last = iter->second.cend();
+                set<int> iset =  iter->second;
+                std::cout << " iset size === " << iset.size() << std::endl;
+                auto Input_first = iset.begin();
+                auto Input_last = iset.end();
+#if 0
+                for(auto iter = Input_first; iter != Input_last; ++iter)
+                    std::cout << *iter << " ";
+                std::cout << std::endl;
+#endif
                _result_word_indexs.insert(insertIn, Input_first, Input_last); 
             }
         }
     }
+#if 0
+    for(auto iter = _result_word_indexs.begin(); iter!= _result_word_indexs.end(); ++iter)
+        std::cout << *iter << " ";
+    std::cout << std::endl;
+#endif
 }
 
 void WorkProcess::statistic(vector<int> & ivec)
 {
-    //
-    for(auto elem : ivec)
-        std::cout << "elem " << elem << std::endl;
+#if 1
+    std::cout << "ivec size = " << ivec.size() << std::endl;
+#endif
     //
     //
     //etc
@@ -43,11 +68,25 @@ void WorkProcess::statistic(vector<int> & ivec)
     for(int idx : ivec){
         pair<string, int> temp_ret = dict[idx];
         string temp_word = temp_ret.first;
+#if 0
         std::cout << "the word : " <<temp_word << std::endl;
+#endif
         int temp_frequency = temp_ret.second;
         int min_len_temp_word;
         min_len_temp_word = distance(_queryWord, temp_word);
-        _resultQue.push(MyResult(temp_word, min_len_temp_word, temp_frequency));
+        if(_resultQue.size() == 0)
+        {
+            _resultQue.push(MyResult(temp_word, min_len_temp_word, temp_frequency));
+        }else 
+        {
+            if(temp_word == _resultQue.top()._word)
+            {
+                continue;
+            }else
+            {
+                _resultQue.push(MyResult(temp_word, min_len_temp_word, temp_frequency));
+            }
+        }
     }
 }
 
@@ -71,21 +110,43 @@ void WorkProcess::process()
     int cnt = 3;
     Json::Value val;
     //Json::Value arr;
+    //
+    //
+    //处理队列为0
+#if 0
+    if(_resultQue.size() == 0)
+    {
+        val[_queryWord.c_str()].append("no answer");
+        
+        Json::StyledWriter sw;
+
+        string res_str = sw.write(val);
+    }
+#endif
     std::cout<<"process begin"<<std::endl;
     for(int i = 0; i != cnt; i++)
     {
         //MyResult result = _resultQue.top();
-      //  val[""] = Json::Value(_resultQue.top()._word);
-      //  arr.append(Json::Value(val));
-    std::cout<<"process begin1111"<<_queryWord<<std::endl;
+        //  val[""] = Json::Value(_resultQue.top()._word);
+        //  arr.append(Json::Value(val));
+        //std::cout<<"process begin1111"<<_queryWord<<std::endl;
         std::cout<<_resultQue.size()<<std::endl;
-        string str=_resultQue.top()._word;
-        val[_queryWord.c_str()].append(str.c_str());
-    std::cout<<"process begin222"<<std::endl;
-        _resultQue.pop();
-    std::cout<<"process begin333"<<std::endl;
+        if(_resultQue.size() !=0)
+        {
+            string str=_resultQue.top()._word;
+            val[_queryWord.c_str()].append(str.c_str());
+            //std::cout<<"process begin222"<<std::endl;
+            _resultQue.pop();
+        }
+        //std::cout<<"process begin333"<<std::endl;
+        //出队列如果为0， 直接发送过去
+        if(_resultQue.size() == 0)
+        {
+            val[_queryWord.c_str()].append("no answer");
+            break;
+        }
     }
-    
+
 
     Json::StyledWriter sw;
 

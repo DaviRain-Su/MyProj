@@ -55,7 +55,8 @@ void do_service(int sockfd)
     char sendbuf[1024] = {0};
     while(1)
     {
-        fgets(sendbuf, sizeof sendbuf, stdin);
+        fgets(sendbuf, sizeof sendbuf,stdin);
+        printf("sendbuf : %s\n", sendbuf);
         write(sockfd, sendbuf, strlen(sendbuf));
 
         //read

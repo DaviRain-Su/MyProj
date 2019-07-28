@@ -102,7 +102,7 @@ void DictProducer::store_index(const char * filepath)
     }
     for(auto iter = _hashtable.begin(); iter != _hashtable.end(); ++iter)
     {
-        output  << iter->first << ": ";
+        output  << iter->first << " ";
         for(auto it = (iter->second).begin(); it != (iter->second).end(); ++it )
         {
             output << *it << " ";

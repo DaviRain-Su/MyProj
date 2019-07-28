@@ -18,7 +18,7 @@ class SplitTool;
 class DictProducer
 {
 public:
-    DictProducer(const string & dir = "../data/EN");
+    DictProducer(const string & dir = "./data/EN");
     //构造函数， 专门为中文处理
    // DictProducer(const string & dir, SplitTool * splitTool );
     void build_dict();//创建英文词典
