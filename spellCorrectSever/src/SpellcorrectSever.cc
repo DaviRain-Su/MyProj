@@ -1,6 +1,8 @@
 #include "../include/SpellcorrectSever.h"
 #include "../include/WorkProcess.h"
 //#include "../include/log4cpp.h"
+
+#include "CacheManger.h"
 #include <functional>
 #include <iostream>
 using std::cout;
@@ -26,6 +28,15 @@ void SpellcorrectSever::start()
     _tcpsever.setMessageCallback(std::bind(&SpellcorrectSever::onMessage, this,std::placeholders::_1));
     _tcpsever.setCloseCallback(std::bind(&SpellcorrectSever::onClose,this, std::placeholders::_1));
     _tcpsever.start();
+    /*加载缓存 cache
+     * 
+     *
+     */
+    //默认构造函数初始化
+    CacheManger CacheManger;
+    
+
+
 }
 
 void SpellcorrectSever::onConnection(TcpConnectionPtr conn)

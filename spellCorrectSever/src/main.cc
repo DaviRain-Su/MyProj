@@ -1,4 +1,5 @@
 #include "../include/SpellcorrectSever.h"
+#include "CacheManger.h"
 
 
 #include <iostream>
@@ -10,8 +11,10 @@ using namespace wd;
 
 int main()
 {
-    
+ 
+
     SpellcorrectSever spellsever("../conf/my.bat");
+    //CacheManger cachemanger;
     spellsever.start();
 
     return 0;

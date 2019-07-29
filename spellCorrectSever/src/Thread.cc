@@ -6,20 +6,45 @@ using std::endl;
 
 namespace  wd
 {
+namespace  current_thread
+{
+    __thread const char * threadName = "0";
+}//
+struct ThreadDate
+{
+    using ThreadCallback = function<void()>;
+    ThreadDate(const string & name, ThreadCallback &&cb)
+    : _name(name)
+    , _cb(std::move(cb))
+    {}
 
+    string _name;
+    ThreadCallback _cb;
+
+    void runInThread()
+    {
+        current_thread::threadName = _name == string() ? "0" : _name.c_str();
+        if(_cb)
+            _cb();
+    }
+};
 void Thread::start()
 {
+    ThreadDate * threadData = new ThreadDate(_name, std::move(_cb));
     //创建一个子线程
-    pthread_create(&_pthid, nullptr, threadfunc, this);
+    pthread_create(&_pthid, nullptr, threadfunc, threadData);
     _isRunning = true;
 }
 
 void * Thread::threadfunc(void* arg)
 {
-    Thread * pthread  = static_cast<Thread*>(arg);
-    if(pthread)
-        pthread->_cb();
-
+    //Thread * pthread  = static_cast<Thread*>(arg);
+    ThreadDate * threadData = static_cast<ThreadDate*> (arg);
+    if(threadData)
+        threadData->runInThread();
+    
+    delete threadData;
+    
     return nullptr;
 }
 

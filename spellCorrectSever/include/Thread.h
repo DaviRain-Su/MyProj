@@ -4,9 +4,15 @@
 #include <boost/noncopyable.hpp>
 #include <functional>
 using std::function;
+#include <string>
+using std::string;
 
 namespace  wd
 {
+namespace current_thread
+{
+extern __thread const char * threadName;
+}//end of namespace current_thread
 
 //具体类
 class Thread
@@ -24,16 +30,18 @@ public:
     using ThreadCallback = function<void()>;
     
     //注册回调函数
-    Thread(ThreadCallback && cb)
+    Thread(ThreadCallback && cb , const string & name = string())
     : _pthid(0)
     , _isRunning(false)
     , _cb(std::move(cb))
+    , _name(name)
     {}
      ~Thread();
-
+    
     void start();
     void join();    
-
+    
+    string getName() const { return _name; }
 private:
     static void* threadfunc(void *);
 
@@ -41,6 +49,8 @@ private:
     pthread_t _pthid; //线程ID
     bool _isRunning; //判断是否在运行
     ThreadCallback _cb;
+    
+    string _name;
 };
 
 }// end of namespace wd

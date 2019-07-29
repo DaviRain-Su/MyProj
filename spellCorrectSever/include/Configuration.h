@@ -25,9 +25,6 @@ class Configuration
             }
         }
     };
-
-
-
 private:
     Configuration(const string & filepath = "./conf/my.bat");
     //这里还没想好怎么处理
