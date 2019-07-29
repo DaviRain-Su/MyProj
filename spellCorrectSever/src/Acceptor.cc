@@ -24,7 +24,7 @@ void Acceptor::ready()
 	bind();
 	listen();
 }
-
+/*设置地址可以重用*/
 void Acceptor::setReuseAddr(bool on)
 {
 	int one = on;
@@ -36,7 +36,7 @@ void Acceptor::setReuseAddr(bool on)
 		perror("setsockopt");	
 	}
 }
-
+/*设置端口可以重用*/
 void Acceptor::setReusePort(bool on)
 {
 	int one = on;
@@ -48,7 +48,7 @@ void Acceptor::setReusePort(bool on)
 		perror("setsockopt");	
 	}
 }
-
+/*将socketfd和ip进行绑定*/
 void Acceptor::bind()
 {
 	int ret = ::bind(_listensock.fd(), 

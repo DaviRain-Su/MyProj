@@ -22,29 +22,25 @@ void SpellcorrectSever::start()
 {
 
     _threadpool.start();
-    //logInfo("start");
-    //TcpConnectionPtr conn;
+    
+    /* cout << "init cache" << endl; */
+    /* CacheManger::initCache(); */
+    /* CacheManger::periodicUpdateCache(); */
+    /* cout << "init cache end" << endl; */
+
     _tcpsever.setConnectionCallback(std::bind(&SpellcorrectSever::onConnection, this, std::placeholders::_1));
     _tcpsever.setMessageCallback(std::bind(&SpellcorrectSever::onMessage, this,std::placeholders::_1));
     _tcpsever.setCloseCallback(std::bind(&SpellcorrectSever::onClose,this, std::placeholders::_1));
+    
     _tcpsever.start();
-    /*加载缓存 cache
-     * 
-     *
-     */
-    //默认构造函数初始化
-    //CacheManger CacheManger;
-    //CacheManger::periodicUpdateCache(); 
-
-
 }
-
+/*连接时需要做的任务*/
 void SpellcorrectSever::onConnection(TcpConnectionPtr conn)
 {
     cout << conn->toString() << " has connected!" << endl;
     conn->send("Welcome to SpellcorrectSever.");
 }
-
+/*发送信息时需要做的事情*/
 void SpellcorrectSever::onMessage(TcpConnectionPtr conn)
 {
     cout << "onMessage...." << endl;
@@ -56,7 +52,7 @@ void SpellcorrectSever::onMessage(TcpConnectionPtr conn)
     
     _threadpool.addTask(std::bind(&WorkProcess::process, work));
 }
-
+/*关闭时需要做的任务*/
 void SpellcorrectSever::onClose(TcpConnectionPtr conn)
 {
     cout << "onClose...." << endl;

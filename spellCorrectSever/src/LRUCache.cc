@@ -29,6 +29,7 @@ void LRUCache::readFromFile(const string & filepath)
         _nodes.push_back(CachNode(key, val));
     }
 #if 1
+    cout << "readFromFile()" << endl;
     for(auto it = _nodes.begin(); it != _nodes.end(); ++it)
     {
         cout << "key : " << it->key << "val: " << endl;
@@ -49,6 +50,14 @@ void LRUCache::writeToFile(const string & filepath)
         cout << "fail open file " << filepath << endl;
         return;
     }
+#if 1
+    cout << "writeToFile()" << endl;
+    for(auto it = _nodes.begin(); it != _nodes.end(); ++it)
+    {
+        cout << "key : " << it->key << "val: " << endl;
+    }
+    cout << endl;
+#endif
     for(auto it = _nodes.begin(); it != _nodes.end(); ++it)
     {
         output << it->key << " " << it->val << "\n";

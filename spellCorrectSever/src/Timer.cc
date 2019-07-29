@@ -18,12 +18,18 @@ Timer::Timer(int initialTime, int intervalTime,  TimerCallback && cb)
 , _isStarted(false)
 , _cb(std::move(cb))
     {
+        cout << "timerfd == " << _timerfd << endl;
         std::cout << " _initialTime:  " << _initialTime
             << " _intervalTime : " << _intervalTime << std::endl;
     }
+void Timer::print()
+{
+    cout << "print timerfd=" << _timerfd << endl;
+}
 
 void Timer::start()
 {
+    print();
     _isStarted = true;
 
     struct pollfd pfd;
@@ -92,6 +98,7 @@ void Timer::handleRead()
     if(ret != sizeof(howmany))
     {
         perror(">> read");
+        printf("111111\n");
     }
 }//end of namespace wd
 

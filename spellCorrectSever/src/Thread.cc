@@ -13,9 +13,9 @@ namespace  current_thread
 struct ThreadDate
 {
     using ThreadCallback = function<void()>;
-    ThreadDate(const string & name, ThreadCallback &&cb)
+    ThreadDate(const string & name, const ThreadCallback & cb)
     : _name(name)
-    , _cb(std::move(cb))
+    , _cb(cb)
     {}
 
     string _name;
@@ -30,7 +30,7 @@ struct ThreadDate
 };
 void Thread::start()
 {
-    ThreadDate * threadData = new ThreadDate(_name, std::move(_cb));
+    ThreadDate * threadData = new ThreadDate(_name, _cb);
     //创建一个子线程
     pthread_create(&_pthid, nullptr, threadfunc, threadData);
     _isRunning = true;

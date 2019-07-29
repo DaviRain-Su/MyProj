@@ -15,8 +15,9 @@ public:
 
     Timer(int initialTime , int intervalTime, TimerCallback &&cd);
 
-    ~Timer() {}
+    ~Timer() { std::cout << "~Timer\n"; }
     
+    void print();
     void start();
     void stop();
 private:

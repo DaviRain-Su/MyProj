@@ -1,9 +1,9 @@
 #pragma once
 #include "LRUCache.h"
-#include <vector>
-
-using std::vector;
 #include "../include/Configuration.h"
+
+#include <vector>
+using std::vector;
 
 namespace wd
 {
@@ -12,20 +12,13 @@ class CacheManger
 {
 public:
     CacheManger(){
-        //_cacheList.reserve(Configuration::getInstance()->threadNum());
-
-        for(int idx = 0; idx != Configuration::getInstance()->threadNum(); ++idx)
-        {
-            //initCache(idx, Configuration::getInstance()->cachePath());
-            _cacheList[idx].readFromFile(Configuration::getInstance()->cachePath());
-        }
         std::cout <<"CacheManger()" << std::endl;
     }
     ~CacheManger() {
         std::cout << "~CacheManger()" << std::endl;
     }
     
-    //static void initCache(size_t idx , const string & filepath = Configuration::getInstance()->cachePath());//从磁盘文件中读取缓存
+    static void initCache(size_t cache_num = Configuration::getInstance()->threadNum(), const string & filepath = Configuration::getInstance()->cachePath());//从磁盘文件中读取缓存
     static LRUCache & getCache(size_t idx);//获取某个缓存
     static void periodicUpdateCache();//定时更行所有缓存
     static void updateCache();

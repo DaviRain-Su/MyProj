@@ -31,7 +31,7 @@ public:
     LRUCache(size_t capacity = 10)
     : size(capacity)
     {
-        readFromFile();
+        //readFromFile();
     }
     //LRUCache(const LRUCache & cache);
 
