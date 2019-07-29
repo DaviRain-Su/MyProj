@@ -11,13 +11,16 @@ using std::endl;
 namespace  wd
 {
 
-Timer::Timer(int initialTime, int intervalTime, TimerCallback && cb)
+Timer::Timer(int initialTime, int intervalTime,  TimerCallback && cb)
 : _timerfd(createTimerfd())
 , _initialTime(initialTime)
 , _intervalTime(intervalTime)
 , _isStarted(false)
 , _cb(std::move(cb))
-    {}
+    {
+        std::cout << " _initialTime:  " << _initialTime
+            << " _intervalTime : " << _intervalTime << std::endl;
+    }
 
 void Timer::start()
 {
@@ -79,6 +82,7 @@ void Timer::setTimerfd(int initialTime, int intervalTime)
     {
         perror(">> timerfd_settime");
     }
+    printf("***胤\n");
 }
 
 void Timer::handleRead()

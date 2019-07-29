@@ -14,7 +14,8 @@ int main()
  
 
     SpellcorrectSever spellsever("../conf/my.bat");
-    //CacheManger cachemanger;
+    CacheManger cachemanger;
+    cachemanger.periodicUpdateCache();
     spellsever.start();
 
     return 0;

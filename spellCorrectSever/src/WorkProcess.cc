@@ -128,59 +128,56 @@ void WorkProcess::process()
      * 
      * */
     string temp_cache_result_queryWord = CacheManger::getCache(cache_idx).get(_queryWord);
-    //if(temp_cache_result_queryWord != "")
-    queryIndexTable();
-    statistic(_result_word_indexs);
-    int cnt = 3;
-    Json::Value val;
-    //Json::Value arr;
-    //
-    //
-    //处理队列为0
-#if 0
-    if(_resultQue.size() == 0)
+    if(temp_cache_result_queryWord == "")
     {
-        val[_queryWord.c_str()].append("no answer");
-        
+
+        queryIndexTable();
+        statistic(_result_word_indexs);
+        int cnt = 3;
+        Json::Value val;
+        //Json::Value arr;
+        //
+        //
+        //处理队列为0
+
+
+        std::cout<<"process begin"<<std::endl;
+        for(int i = 0; i != cnt; i++)
+        {
+            //MyResult result = _resultQue.top();
+            //  val[""] = Json::Value(_resultQue.top()._word);
+            //  arr.append(Json::Value(val));
+            //std::cout<<"process begin1111"<<_queryWord<<std::endl;
+            std::cout<<_resultQue.size()<<std::endl;
+            if(_resultQue.size() !=0)
+            {
+                string str=_resultQue.top()._word;
+                val[_queryWord.c_str()].append(str.c_str());
+                //std::cout<<"process begin222"<<std::endl;
+                _resultQue.pop();
+            }
+            //std::cout<<"process begin333"<<std::endl;
+            //出队列如果为0， 直接发送过去
+            if(_resultQue.size() == 0)
+            {
+                val[_queryWord.c_str()].append("no answer");
+                break;
+            }
+        }
+
+
         Json::StyledWriter sw;
 
         string res_str = sw.write(val);
-    }
-#endif
-    
-    
-    std::cout<<"process begin"<<std::endl;
-    for(int i = 0; i != cnt; i++)
-    {
-        //MyResult result = _resultQue.top();
-        //  val[""] = Json::Value(_resultQue.top()._word);
-        //  arr.append(Json::Value(val));
-        //std::cout<<"process begin1111"<<_queryWord<<std::endl;
-        std::cout<<_resultQue.size()<<std::endl;
-        if(_resultQue.size() !=0)
-        {
-            string str=_resultQue.top()._word;
-            val[_queryWord.c_str()].append(str.c_str());
-            //std::cout<<"process begin222"<<std::endl;
-            _resultQue.pop();
-        }
-        //std::cout<<"process begin333"<<std::endl;
-        //出队列如果为0， 直接发送过去
-        if(_resultQue.size() == 0)
-        {
-            val[_queryWord.c_str()].append("no answer");
-            break;
-        }
+        //
+        //先添加到缓存中在发送过去
+        CacheManger::getCache(cache_idx).addElement(_queryWord, res_str);
+        
+        _conn->sendInLoop(res_str);
+    }else{
+        _conn->sendInLoop(temp_cache_result_queryWord);
     }
 
-
-    Json::StyledWriter sw;
-
-    string res_str = sw.write(val);
-    //
-    //
-    //
-    _conn->sendInLoop(res_str);
 }
 
 

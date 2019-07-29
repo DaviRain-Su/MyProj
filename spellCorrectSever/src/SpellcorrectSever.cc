@@ -33,8 +33,8 @@ void SpellcorrectSever::start()
      *
      */
     //默认构造函数初始化
-    CacheManger CacheManger;
-    
+    //CacheManger CacheManger;
+    //CacheManger::periodicUpdateCache(); 
 
 
 }

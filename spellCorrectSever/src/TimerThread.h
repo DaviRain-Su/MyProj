@@ -9,8 +9,7 @@ class TimerThread
 {
     using TimerCallback = function<void()>;
 public:
-    
-    TimerThread(int initialTime, int initervalTime, TimerCallback && cb)
+    TimerThread(int initialTime, int initervalTime,TimerCallback && cb)
     : _timer(initialTime, initervalTime, std::move(cb))
     , _thread(std::bind(&Timer::start, &_timer))
     {}

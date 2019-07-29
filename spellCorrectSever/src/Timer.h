@@ -1,4 +1,6 @@
 #pragma once
+#include "../include/Configuration.h"
+
 #include <functional>
 using  std::function;
 
@@ -11,7 +13,7 @@ class Timer
 public:
     using TimerCallback = function<void()>;
 
-    Timer(int initialTime, int intervalTime, TimerCallback && cd);
+    Timer(int initialTime , int intervalTime, TimerCallback &&cd);
 
     ~Timer() {}
     

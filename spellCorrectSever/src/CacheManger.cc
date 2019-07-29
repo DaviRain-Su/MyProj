@@ -1,5 +1,6 @@
 #include "CacheManger.h"
 #include "TimerThread.h"
+#include "../include/Configuration.h"
 
 #include <fstream>
 #include <sstream>
@@ -9,6 +10,7 @@ using std::istringstream;
 #include <iostream>
 using std::cout;
 using std::endl;
+#include <functional>
 
 namespace wd
 {
@@ -58,6 +60,8 @@ LRUCache & CacheManger::getCache(size_t idx)//获取某个缓存
 
 void CacheManger::updateCache()
 {
+    std::cout << "updateCache() begin" << std::endl;
+#if 0
     auto firstCacheNode = _cacheList[0];
     //将1, 2, ..... , N - 1写到第一个0号LRUCache
     for(size_t idx = 1; idx != _cacheList.size(); ++idx)
@@ -70,12 +74,14 @@ void CacheManger::updateCache()
         _cacheList[idx].update(firstCacheNode);
     }
     firstCacheNode.writeToFile();
-
+#endif
+    std::cout << "updateCache()" << std::endl;
 }
 
 void CacheManger::periodicUpdateCache()//定时更行所有缓存
 {
-    TimerThread time(3, 6, updateCache);
+    std::cout <<"periodicUpdateCache()" << std::endl;
+    TimerThread time(Configuration::getInstance()->initTime(), Configuration::getInstance()->updateTime(), std::bind(&CacheManger::updateCache));
     time.start();
 }
 
