@@ -64,7 +64,7 @@ void CacheManger::periodicUpdateCache()
     std::cout << "periodicUpdateCache()" << std::endl;
 #endif
     //updateCache();
-#if 1
+#if 0
     std::cout <<"periodicUpdateCache()" << std::endl;
     TimerThread time(Configuration::getInstance()->initTime(), Configuration::getInstance()->updateTime(), std::bind(&CacheManger::updateCache));
     time.start();

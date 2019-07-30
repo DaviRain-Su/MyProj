@@ -134,9 +134,9 @@ void WorkProcess::process()
         queryIndexTable();
         statistic(_result_word_indexs);
         int cnt = 3;
+        Json::Value arr;
         Json::Value val;
         //Json::Value arr;
-        //
         //
         //处理队列为0
 
@@ -151,10 +151,17 @@ void WorkProcess::process()
             std::cout<<_resultQue.size()<<std::endl;
             if(_resultQue.size() !=0)
             {
+#if 0
                 string str=_resultQue.top()._word;
                 val[_queryWord.c_str()].append(str.c_str());
                 //std::cout<<"process begin222"<<std::endl;
                 _resultQue.pop();
+#endif
+#if 1
+                val[_queryWord.c_str()] = Json::Value(_resultQue.top()._word.c_str());
+                arr["key"].append(val);
+                _resultQue.pop();
+#endif
             }
             //std::cout<<"process begin333"<<std::endl;
             //出队列如果为0， 直接发送过去
@@ -168,11 +175,14 @@ void WorkProcess::process()
 
         Json::StyledWriter sw;
 
-        string res_str = sw.write(val);
+        string res_str = sw.write(arr);
         //
         //先添加到缓存中在发送过去
         CacheManger::getCache(cache_idx).addElement(_queryWord, res_str);
-        
+    #if 1
+        //持久化
+        CacheManger::getCache(cache_idx).writeToFile();
+    #endif 
         _conn->sendInLoop(res_str);
     }else{
         _conn->sendInLoop(temp_cache_result_queryWord);

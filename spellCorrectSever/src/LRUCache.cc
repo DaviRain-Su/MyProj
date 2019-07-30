@@ -45,7 +45,7 @@ void LRUCache::readFromFile(const string & filepath)
 } 
 void LRUCache::writeToFile(const string & filepath)
 {
-    ofstream output(filepath);
+    ofstream output(filepath, std::ofstream::app);
     if(!output.good()){
         cout << "fail open file " << filepath << endl;
         return;
@@ -54,13 +54,13 @@ void LRUCache::writeToFile(const string & filepath)
     cout << "writeToFile()" << endl;
     for(auto it = _nodes.begin(); it != _nodes.end(); ++it)
     {
-        cout << "key : " << it->key << "val: " << endl;
+        cout << "key : " << it->key << "val: "  << it->val << endl;
     }
     cout << endl;
 #endif
     for(auto it = _nodes.begin(); it != _nodes.end(); ++it)
     {
-        output << it->key << " " << it->val << "\n";
+        output << it->val << "\n";
     }
     output.close();
     
