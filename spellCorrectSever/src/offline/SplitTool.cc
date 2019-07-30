@@ -1,13 +1,14 @@
-#include "../include/SplitTool.h"
-
-#include "../include/Configuration.h"
+#include "../../include/SplitTool.h"
 
 namespace wd
 {
-SplitToolEN::SplitToolEN(Configuration  conf)
-: _conf(conf)
+
+vector<string>  SplitToolCppJieba::cut(const string  & sentence)
 {
-
+    vector<string> words;
+    string s = sentence;
+    //中文分词
+    _jieba.Cut(s,words, true);
+    return words;
 }
-
 }

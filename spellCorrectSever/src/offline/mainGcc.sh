@@ -1,2 +1,2 @@
 #!/bin/bash
-g++ main.cc DictProducer.cc -o ../../DictProducer.exe 
+g++ main.cc SplitTool.cc DictProducer.cc -o ../../bin/DictProducer.exe -I../../include/

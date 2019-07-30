@@ -29,10 +29,140 @@ namespace wd
 {
 
 DictProducer::DictProducer(const string & dir)
-: _dir(dir)
-, _splitTool(nullptr)
+    : _dir(dir)
+      , _splitTool(nullptr)
+    {
+        cout << "_dir >> " << _dir << endl;   
+    }
+DictProducer::DictProducer(const string & dir, SplitToolCppJieba* splitTool )
+    : _dir(dir)
+      , _splitTool(splitTool)
+    {
+        cout << "DictProducer(const string, SplitTool*)" << endl;
+    }
+
+void DictProducer::build_cn_dict()
 {
-    cout << "_dir >> " << _dir << endl;   
+    get_files();
+
+    //处理vector<string> _files文件路径的集合
+    
+    for(auto & iter : _files)
+    {
+        cout << ">> files: " << iter << endl;
+        operatorCN(iter);
+    }
+}
+/*处理中文分词*/
+void DictProducer::operatorCN(const string & filepath)
+{
+
+    ifstream input(filepath);
+    if(!input.good()){
+        cout << "open file is failed!" << filepath <<  endl;
+    }
+    //将文章的标点符号删除
+    //中文标点符号集合
+    vector<string> punct{"，","。","·","~","！","@","#","￥","%","^","&",
+        "*","（","）","-","——","+","=","|","、","：","；","’","“","”","《","》",
+        "{","}","【","】","、","？", "1", "2", "3", "4", "5", "6", "7", "8","9","0",
+        "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P",
+        "A", "S", "D", "F", "G", "H", "J", "K","L",
+        "Z", "X", "C", "V", "B", "N", "M",
+        "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
+        "a", "s", "d", "f", "g", "h", "j", "k", "l", 
+        "z", "x", "c", "v", "b", "n", "m"};
+
+    std::string line_read;
+    string line_out;
+    std::string subtemp;
+    std::vector<std::string> files;
+    while(std::getline(input, line_read))
+    {
+        
+        size_t line_len = length(line_read); 
+        for(size_t idx = 0; idx <= line_len; idx++)
+        {
+            size_t nBytes = nBytesCode(line_read[idx]);
+            subtemp = line_read.substr(idx, nBytes);
+            idx += (nBytes - 1);
+            for(auto & tm : punct)
+            {
+                if(tm == subtemp) line_out.append(" ");
+                else line_out.append(subtemp);
+            }
+        }
+        files.push_back(line_out);
+    }
+    input.close();
+    //中文分词
+    //
+    //
+    vector<string> words;
+    for(auto iter = files.begin(); iter != files.end(); ++iter)
+    {
+         words = _splitTool->cut(*iter); 
+         for(auto & word : words)
+         { 
+            push_dict(word);  
+         } 
+    }
+}
+size_t DictProducer::nBytesCode(const char ch)
+{
+    if(ch & (1 << 7))
+    {
+        int nBytes = 1;
+        for(int idx = 0; idx != 6; ++idx)
+        {
+            if(ch & (1 << (6 - idx)))
+            {
+                ++nBytes;
+            }else
+                break;
+        }
+        return nBytes;
+    }
+    return 1;
+}
+size_t DictProducer::length(const string & str)
+{
+    size_t ilen = 0;
+    for(size_t idx = 0; idx != str.size(); ++idx)
+    {
+        int nBytes = nBytesCode(str[idx]);
+        idx += (nBytes - 1);
+        ++ilen;
+    }
+    return ilen;
+}
+void DictProducer::build_cn_index()
+{
+    vector<pair<string, int>> dics;
+    for(auto iter = _dict.begin(); iter != _dict.end();++iter)
+    {
+        dics.push_back(make_pair(iter->first, iter->second));
+    }
+
+    size_t idx = 0;
+    for(auto iter = dics.begin(); iter != dics.end(); ++iter)
+    {
+        auto word = iter->first;
+        /*这里是中文的拆分为单个字符*/
+#if 1
+        string subtemp;
+        size_t line_len = length(word); 
+        for(size_t idx = 0; idx != line_len; ++idx)
+        {
+            size_t nBytes = nBytesCode(word[idx]);
+            subtemp = word.substr(idx, nBytes);
+            idx += (nBytes - 1);
+            _hashtable[subtemp].insert(idx);
+        }
+#endif
+        idx++;
+    }
+
 }
 void DictProducer::build_dict()
 {
@@ -41,8 +171,8 @@ void DictProducer::build_dict()
     //process vector<string> _files;
     for(auto & iter : _files)
     {
-       cout << ">> file: " << iter << endl;
-       operatorEN(iter); 
+        cout << ">> file: " << iter << endl;
+        operatorEN(iter); 
     }
 }
 
@@ -58,6 +188,7 @@ void DictProducer::build_index()
     for(auto iter = dics.begin(); iter != dics.end(); ++iter)
     {
         auto word = iter->first;
+        /*这里是英文的拆分为单个字符*/
         for(auto & ch : word)
         {
             //string 构造函数的使用sting(size_t count, charT );
@@ -71,11 +202,11 @@ void DictProducer::build_index()
 void DictProducer::push_dict(const string & word)
 {
     auto findIter = _dict.find(word);
-   if(findIter == _dict.end())
-       _dict[word]++;
-   else{
+    if(findIter == _dict.end())
+        _dict[word]++;
+    else{
         findIter->second++;
-   }
+    }
 }
 void DictProducer::store_dict(const char * filepath)
 {
@@ -141,7 +272,8 @@ void DictProducer::show_index() const
         cout << endl;
     }
 }
-//void DictProducer::getDir(const char * path)
+/*获取文件路径存储文件的路径集合到vector<stirng> _files
+ *这里可以中英文混用*/
 void DictProducer::get_files()
 {
     DIR * dir;
@@ -170,10 +302,10 @@ void DictProducer::get_files()
 
 
 
-
+/*这里是特定的对于英文来说的分词*/
 void DictProducer::operatorEN(const string & filename)
 {
-    
+
     //打开文件
     ifstream input(filename);
     if(!input.good()){
@@ -193,11 +325,11 @@ void DictProducer::operatorEN(const string & filename)
         file.push_back(line);
     }
     input.close();
-    
+
     std::vector<std::string> words;
     //分词
     char temp[20] = {0};
-   for(auto lineno = file.begin(); lineno != file.end(); ++lineno)
+    for(auto lineno = file.begin(); lineno != file.end(); ++lineno)
     {
         auto i = lineno->begin();
         int k = 0;
@@ -227,7 +359,6 @@ void DictProducer::operatorEN(const string & filename)
     for(auto & word : words)
     {
         push_dict(word);
-        //_dict[word]++;
     }
 }
 
