@@ -11,6 +11,35 @@ using std::endl;
 
 namespace wd
 {
+void LRUCache::print()
+{
+#if 1
+    //调试打印两个呢？？？？
+    cout << "print()" << endl;
+    for(auto it = _nodes.begin(); it != _nodes.end(); ++it)
+    {
+        cout << ">>key : " << it->key << " >> val: " << it->val << endl;
+    }
+    cout << endl;
+#endif
+
+}
+
+LRUCache LRUCache::operator=(const LRUCache & rhs)
+{
+   _nodes.erase(_nodes.begin(), _nodes.end());
+   _hash_map.erase(_hash_map.begin(), _hash_map.end());
+    for(auto it = rhs._nodes.begin(); it != rhs._nodes.end(); ++it)
+    {
+        _nodes.push_back(*it);
+        //_hash_map[*it] = it;
+    }
+    for(auto iter =  _nodes.begin(); iter != _nodes.end(); ++iter)
+    {
+        _hash_map[iter->key] = iter;
+    }
+    return *this;
+}
 void LRUCache::readFromFile(const string & filepath)
 {
     ifstream input(filepath);
@@ -24,15 +53,17 @@ void LRUCache::readFromFile(const string & filepath)
     string line;
     while(std::getline(input, line))
     {
+        if(line == "") continue;
         istringstream record(line);
         record >> key >> val;
         _nodes.push_back(CachNode(key, val));
     }
 #if 1
+    //调试打印两个呢？？？？
     cout << "readFromFile()" << endl;
     for(auto it = _nodes.begin(); it != _nodes.end(); ++it)
     {
-        cout << "key : " << it->key << "val: " << endl;
+        cout << ">>key : " << it->key << " >> val: " << it->val << endl;
     }
     cout << endl;
 #endif
@@ -45,7 +76,8 @@ void LRUCache::readFromFile(const string & filepath)
 } 
 void LRUCache::writeToFile(const string & filepath)
 {
-    ofstream output(filepath, std::ofstream::app);
+    //ofstream output(filepath, std::ofstream::app);
+    ofstream output(filepath);
     if(!output.good()){
         cout << "fail open file " << filepath << endl;
         return;
@@ -54,13 +86,13 @@ void LRUCache::writeToFile(const string & filepath)
     cout << "writeToFile()" << endl;
     for(auto it = _nodes.begin(); it != _nodes.end(); ++it)
     {
-        cout << "key : " << it->key << "val: "  << it->val << endl;
+        cout << ">> key : " << it->key << " >> val: "  << it->val << '\n';
     }
     cout << endl;
 #endif
     for(auto it = _nodes.begin(); it != _nodes.end(); ++it)
     {
-        output << it->val << "\n";
+        output  << it->key  << " " << it->val << std::endl;
     }
     output.close();
     
@@ -69,15 +101,25 @@ void LRUCache::writeToFile(const string & filepath)
 //更新cache
 void LRUCache::update(const LRUCache  & rhs)
 {
+#if 1
+    std::cout << "update()" << std::endl;
+#endif
+    for(auto it = rhs._nodes.begin(); it != rhs._nodes.begin(); ++it)
+    {
+        std::cout << "rhs--key: " << it->key << " rhs--val " << it->val << std::endl; 
+    }
+     
     for(auto it = rhs._nodes.begin(); it != rhs._nodes.begin(); ++it)
     {
         _nodes.push_back(*it);
     }
-    _nodes.unique(compare);
+    //_nodes.unique(compare);
     for(auto it = _nodes.begin(); it != _nodes.end(); ++it)
     {
         _hash_map[it->key] = it;
     }
+    printf("@@@\n");
+    print();
 }
 string LRUCache::get(const string & key)
 {

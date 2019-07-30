@@ -1,6 +1,7 @@
 #include "../include/SpellcorrectSever.h"
 #include "../include/WorkProcess.h"
 //#include "../include/log4cpp.h"
+#include "TimerThread.h"
 
 #include "CacheManger.h"
 #include <functional>
@@ -22,7 +23,11 @@ void SpellcorrectSever::start()
 {
 
     _threadpool.start();
-    
+#if 1 
+    CacheManger::initCache();
+    TimerThread time(Configuration::getInstance()->initTime(), Configuration::getInstance()->updateTime(), std::bind(&CacheManger::periodicUpdateCache));
+    time.start();
+#endif
     /* cout << "init cache" << endl; */
     /* CacheManger::initCache(); */
     /* CacheManger::periodicUpdateCache(); */

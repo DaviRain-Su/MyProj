@@ -26,21 +26,23 @@ struct CachNode{
 
 class LRUCache
 {
-    friend class CacheManger;
 public:
     LRUCache(size_t capacity = 10)
     : size(capacity)
-    {
-        //readFromFile();
-    }
-    //LRUCache(const LRUCache & cache);
+    {}
 
     ~LRUCache() {}
+    LRUCache operator=(const LRUCache & rhs);
+
     void readFromFile(const string & filepath = Configuration::getInstance()->cachePath());//从文件中读取缓存信息
     void writeToFile(const string & filepath = Configuration::getInstance()->cachePath());//将缓存信息写入文件
+    
     void update(const LRUCache  & rhs);
+    
     string get(const string & key);
     void addElement(const string & key, const string & val);
+    
+    void print();//测试
 private:
     static bool compare(const CachNode & lhs, const CachNode & rhs)
     {

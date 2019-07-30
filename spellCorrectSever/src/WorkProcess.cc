@@ -30,14 +30,14 @@ void WorkProcess::queryIndexTable()
 #endif
             //英文的一个单词的字符和hash_table中的第一个key值进行比较
             string tmp_char(1, ch);
-            std::cout << iter->first << std::endl;
+            //std::cout << iter->first << std::endl;
             if(tmp_char == iter->first)
             {
 
-                std::cout << "===" <<  iter->first << std::endl;
+                //std::cout << "===" <<  iter->first << std::endl;
                 auto insertIn = _result_word_indexs.end();
                 set<int> iset =  iter->second;
-                std::cout << " iset size === " << iset.size() << std::endl;
+                //std::cout << " iset size === " << iset.size() << std::endl;
                 auto Input_first = iset.begin();
                 auto Input_last = iset.end();
 #if 0
@@ -136,30 +136,22 @@ void WorkProcess::process()
         int cnt = 3;
         Json::Value arr;
         Json::Value val;
-        //Json::Value arr;
-        //
         //处理队列为0
-
-
         std::cout<<"process begin"<<std::endl;
         for(int i = 0; i != cnt; i++)
         {
-            //MyResult result = _resultQue.top();
-            //  val[""] = Json::Value(_resultQue.top()._word);
-            //  arr.append(Json::Value(val));
-            //std::cout<<"process begin1111"<<_queryWord<<std::endl;
             std::cout<<_resultQue.size()<<std::endl;
             if(_resultQue.size() !=0)
             {
-#if 0
+#if 1
                 string str=_resultQue.top()._word;
-                val[_queryWord.c_str()].append(str.c_str());
+                arr[_queryWord.c_str()].append(str.c_str());
                 //std::cout<<"process begin222"<<std::endl;
                 _resultQue.pop();
 #endif
-#if 1
-                val[_queryWord.c_str()] = Json::Value(_resultQue.top()._word.c_str());
-                arr["key"].append(val);
+#if 0
+                val[""] = Json::Value(_resultQue.top()._word.c_str());
+                arr[_queryWord.c_str()].append(val);
                 _resultQue.pop();
 #endif
             }
@@ -167,27 +159,28 @@ void WorkProcess::process()
             //出队列如果为0， 直接发送过去
             if(_resultQue.size() == 0)
             {
-                val[_queryWord.c_str()].append("no answer");
+                arr[_queryWord.c_str()].append("noAnswer");
                 break;
             }
         }
 
 
-        Json::StyledWriter sw;
+        //Json::StyledWriter sw;
+        Json::FastWriter writer;
 
-        string res_str = sw.write(arr);
+        string res_str_noStytle = writer.write(arr);
         //
         //先添加到缓存中在发送过去
-        CacheManger::getCache(cache_idx).addElement(_queryWord, res_str);
-    #if 1
+        std::cout << "cache_idx = " << cache_idx << std::endl;
+        CacheManger::getCache(cache_idx).addElement(_queryWord, res_str_noStytle);
+    #if 0
         //持久化
         CacheManger::getCache(cache_idx).writeToFile();
     #endif 
-        _conn->sendInLoop(res_str);
+        _conn->sendInLoop(res_str_noStytle);
     }else{
         _conn->sendInLoop(temp_cache_result_queryWord);
     }
-
 }
 
 
