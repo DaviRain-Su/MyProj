@@ -51,6 +51,8 @@ private:
     void push_dict(const string & word);//存储某个单词
     size_t nBytesCode(const char ch);
     size_t length(const string & str);
+    std::wstring StringToWstring(const string str);
+    string WstringToString(const std::wstring str);
 private:
     string _dir;//语料库文件存放路径
     vector<string> _files;//语料库文件的绝对路径集合

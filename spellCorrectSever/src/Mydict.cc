@@ -20,7 +20,7 @@ Mydict::Mydict(const string & conffilePath )
     {
         init();
         show_path();   
-#if 0
+#if 1
         show_dict();
         show_index();
 #endif
@@ -102,7 +102,8 @@ Mydict *Mydict::getInstance()
 #endif
 
 void Mydict::init(){
-
+    
+    //载入英文
     std::ifstream input(_endictpath);
     if(!input.good()){
         std::cout << ">> ifstream open file error " << _endictpath << std::endl;
@@ -110,11 +111,11 @@ void Mydict::init(){
     }
     string line;
     string key;
-    string val;
+    int  val;
     while(std::getline(input,line)){
         std::istringstream record(line);
         record >> key >> val;
-        _dict.push_back(make_pair(key, std::stoi(val)));
+        _dict.push_back(make_pair(key, val));
     }
     input.close();
     
@@ -125,12 +126,51 @@ void Mydict::init(){
     }
 
     while(std::getline(in, line)){
+        pair<string,set<int>> temppair;
+
         std::istringstream record(line);
-        record >> key;
+        record >> temppair.first;
+        //record >> key;
         while(record >> val)
         {
-             _index_table[key].insert(std::stoi(val));
+             //_index_table[key].insert(std::stoi(val));
+             temppair.second.insert(val);
         }
+        _index_table.insert(temppair);
+    }
+    in.close();
+    //载入中文
+    std::ifstream input_(_cndictpath);
+    if(!input_.good()){
+        std::cout << ">> ifstream open file error " << _cndictpath << std::endl;
+        return;
+    }
+    string key_;
+    int val_;
+    while(input >> key_ >> val_/*std::getline(input_,line)*/){
+        //std::istringstream record(line);
+        //record >> key >> val;
+        _dict.push_back(make_pair(key_, val_));
+    }
+    input.close();
+    
+    std::ifstream in_(_cnindexpath);
+    if(!in_.good()){
+        std::cout << ">> iifstream open file error " << _cndictpath << std::endl;
+        return ;
+    }
+
+    while(std::getline(in_, line)){
+        pair<string, set<int>> temppair;
+        std::istringstream record(line);
+        record >> temppair.first;
+        
+        while(record >> val)
+        {
+             //_index_table[key].insert(std::stoi(val));
+             temppair.second.insert(val);
+        }
+        _index_table.insert(temppair);
     }
     in.close();
 

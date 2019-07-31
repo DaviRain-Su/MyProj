@@ -3,6 +3,8 @@
 #include "../include/EditDistance.h"
 #include "../include/Thread.h"
 #include "CacheManger.h"
+using std::wstring;
+
 namespace  wd
 {
 WorkProcess::WorkProcess(const string & queryword, const TcpConnectionPtr & conn)
@@ -10,44 +12,42 @@ WorkProcess::WorkProcess(const string & queryword, const TcpConnectionPtr & conn
     , _conn(conn)
     {}
 
+std::wstring WorkProcess::StringToWstring(const std::string str)
+{
+    unsigned len = str.size() * 2;//预留字节数
+    setlocale(LC_CTYPE, "");//必须调用此函数
+    wchar_t *p = new wchar_t[len];//申请一段内存存放装换后的字符串
+    mbstowcs(p,str.c_str(), len);//装换
+    std::wstring str1(p);
+    delete[] p;//释放申请的内存
+    return str1;
+}
+std::string WorkProcess::WstringToString(const std::wstring str)
+{
+    //wstring to stirng
+    unsigned len = str.size() * 4;
+    setlocale(LC_CTYPE, "");
+    char * p = new char[len];
+    wcstombs(p, str.c_str(),len);
+    std::string str1(p);
+    delete []p;
+    return str1;
+}
 //处理与要比对的单词单词， 将候选此的索记录下来
 void WorkProcess::queryIndexTable()
 {
-    string response = _queryWord;
-    map<string, set<int>> hash_table = Mydict::getInstance()->getIndecTable();
-#if 0
-    std::cout << "hash_table size = " << hash_table.size() << std::endl;
-    std::cout << "hash_table---second size = " << hash_table["a"].size() << std::endl;
-    for(auto iter = hash_table.begin(); iter != hash_table.end();++iter)
-        std::cout << "hash_table---second size = " << iter->second.size() << std::endl;
-#endif
-    for(auto & ch : _queryWord)
-    {
-        for(auto iter = hash_table.begin(); iter != hash_table.end(); ++iter)
-        {
-#if 0
-            printf("*****************\n");
-#endif
-            //英文的一个单词的字符和hash_table中的第一个key值进行比较
-            string tmp_char(1, ch);
-            //std::cout << iter->first << std::endl;
-            if(tmp_char == iter->first)
-            {
+    std::wstring response = StringToWstring(_queryWord);
 
-                //std::cout << "===" <<  iter->first << std::endl;
-                auto insertIn = _result_word_indexs.end();
-                set<int> iset =  iter->second;
-                //std::cout << " iset size === " << iset.size() << std::endl;
-                auto Input_first = iset.begin();
-                auto Input_last = iset.end();
-#if 0
-                for(auto iter = Input_first; iter != Input_last; ++iter)
-                    std::cout << *iter << " ";
-                std::cout << std::endl;
-#endif
-               _result_word_indexs.insert(insertIn, Input_first, Input_last); 
-            }
-        }
+    map<string, set<int>>& hash_table = Mydict::getInstance()->getIndecTable();
+    
+    int bitmap[100000] = {0};
+
+    for(auto it = response.begin(); it != response.end();++it)
+    {
+        wstring wstr;
+        wstr.push_back(*it);
+        string str = WstringToString(wstr);
+        statistic(hash_table[str], bitmap);
     }
 #if 0
     for(auto iter = _result_word_indexs.begin(); iter!= _result_word_indexs.end(); ++iter)
@@ -56,44 +56,38 @@ void WorkProcess::queryIndexTable()
 #endif
 }
 
-void WorkProcess::statistic(vector<int> & ivec)
+void WorkProcess::statistic(set<int> & iset, int bitmap[])
 {
 #if 1
-    std::cout << "ivec size = " << ivec.size() << std::endl;
+    std::cout << "ivec size = " << iset.size() << std::endl;
 #endif
     //
     //
     //etc
     vector<pair<string, int>> dict = Mydict::getInstance()->getDict();
     
-    for(int idx : ivec){
-        pair<string, int> temp_ret = dict[idx];
-        string temp_word = temp_ret.first;
+    for(int idx : iset)
+    {
+        if(bitmap[idx] == 0)
+        {
+
+            pair<string, int> temp_ret = dict[idx];
+            string temp_word = temp_ret.first;
 #if 0
-        std::cout << "the word : " <<temp_word << std::endl;
+            std::cout << "the word : " <<temp_word << std::endl;
 #endif
-        int temp_frequency = temp_ret.second;
-        int min_len_temp_word;
-        min_len_temp_word = distance(_queryWord, temp_word);
-        if(_resultQue.size() == 0)
-        {
+            int temp_frequency = temp_ret.second;
+            int min_len_temp_word;
+            min_len_temp_word = distance(temp_word);
             _resultQue.push(MyResult(temp_word, min_len_temp_word, temp_frequency));
-        }else 
-        {
-            if(temp_word == _resultQue.top()._word)
-            {
-                continue;
-            }else
-            {
-                _resultQue.push(MyResult(temp_word, min_len_temp_word, temp_frequency));
-            }
+            bitmap[idx] = 1;
         }
     }
 }
 
-int WorkProcess::distance(const string & lhs, const string & rhs)
+int WorkProcess::distance(const string & rhs)
 {
-    return editDistance(lhs, rhs);
+    return editDistance(_queryWord, rhs);
 }
 //运行在线程池中的一个子线程中
 void WorkProcess::process()
@@ -132,7 +126,7 @@ void WorkProcess::process()
     {
 
         queryIndexTable();
-        statistic(_result_word_indexs);
+        //statistic(_result_word_indexs);
         int cnt = 3;
         Json::Value arr;
         Json::Value val;
@@ -173,10 +167,10 @@ void WorkProcess::process()
         //先添加到缓存中在发送过去
         std::cout << "cache_idx = " << cache_idx << std::endl;
         CacheManger::getCache(cache_idx).addElement(_queryWord, res_str_noStytle);
-    #if 0
+#if 0
         //持久化
         CacheManger::getCache(cache_idx).writeToFile();
-    #endif 
+#endif 
         _conn->sendInLoop(res_str_noStytle);
     }else{
         _conn->sendInLoop(temp_cache_result_queryWord);

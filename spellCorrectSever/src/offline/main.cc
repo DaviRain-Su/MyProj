@@ -12,10 +12,10 @@ int main()
     /* dir.build_dict(); */
     /* dir.build_index(); */
     dir.build_cn_dict();
-    dir.build_index();
-    dir.show_dict();
-    dir.show_files();
-    dir.show_index();
+    dir.build_cn_index();
+    //dir.show_dict();
+    //dir.show_files();
+    //dir.show_index();
     dir.store_dict("../data/wordCN/word_cn_dict.bat");
     dir.store_index("../data/wordCN/word_cn_hashtable.bat");
 #endif

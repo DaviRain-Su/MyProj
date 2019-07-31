@@ -34,8 +34,8 @@ public:
     
     void process();
     void queryIndexTable();
-    void statistic(vector<int> & ivec);
-    int distance(const string & lsh, const string & rhs);
+    void statistic(set<int> & iset, int bitmap[]);
+    int distance(const string & rhs);
 //    void response(Cache & cache);
     struct MyCompare
     {
@@ -55,6 +55,9 @@ public:
             return false;
         }
     };
+private:
+    std::wstring StringToWstring(const std::string str);
+    std::string WstringToString(const std::wstring str);
 private:
     string _queryWord;
     std::priority_queue<MyResult, vector<MyResult>, MyCompare> _resultQue;

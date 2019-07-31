@@ -162,6 +162,7 @@ void DictProducer::build_cn_index()
         {
             wstring wstr;
             wstr.push_back(*it);
+            std::cout << "------ " << WstringToString(wstr)<< std::endl;
            _hashtable[WstringToString(wstr)].insert(idx); 
         }
         idx++;
