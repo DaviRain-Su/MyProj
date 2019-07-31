@@ -14,7 +14,11 @@
         perror(funcName);\
     }\
 }
+#include <locale>
+#include <codecvt>
 
+#include <regex>
+using std::regex_replace;
 #include <iostream>
 #include <fstream>
 #include <cctype>
@@ -24,6 +28,7 @@ using std::ifstream;
 using std::ofstream;
 using std::endl;
 using std::cout;
+using std::wstring;
 
 namespace wd
 {
@@ -53,6 +58,27 @@ void DictProducer::build_cn_dict()
         operatorCN(iter);
     }
 }
+std::wstring DictProducer::StringToWstring(const std::string str)
+{
+    unsigned len = str.size() * 2;//预留字节数
+    setlocale(LC_CTYPE, "");//必须调用此函数
+    wchar_t *p = new wchar_t[len];//申请一段内存存放装换后的字符串
+    mbstowcs(p,str.c_str(), len);//装换
+    std::wstring str1(p);
+    delete[] p;//释放申请的内存
+    return str1;
+}
+std::string DictProducer::WstringToString(const std::wstring str)
+{
+    //wstring to stirng
+    unsigned len = str.size() * 4;
+    setlocale(LC_CTYPE, "");
+    char * p = new char[len];
+    wcstombs(p, str.c_str(),len);
+    std::string str1(p);
+    delete []p;
+    return str1;
+}
 /*处理中文分词*/
 void DictProducer::operatorCN(const string & filepath)
 {
@@ -63,36 +89,17 @@ void DictProducer::operatorCN(const string & filepath)
     }
     //将文章的标点符号删除
     //中文标点符号集合
-    vector<string> punct{"，","。","·","~","！","@","#","￥","%","^","&",
-        "*","（","）","-","——","+","=","|","、","：","；","’","“","”","《","》",
-        "{","}","【","】","、","？", "1", "2", "3", "4", "5", "6", "7", "8","9","0",
-        "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P",
-        "A", "S", "D", "F", "G", "H", "J", "K","L",
-        "Z", "X", "C", "V", "B", "N", "M",
-        "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
-        "a", "s", "d", "f", "g", "h", "j", "k", "l", 
-        "z", "x", "c", "v", "b", "n", "m"};
-
     std::string line_read;
-    string line_out;
-    std::string subtemp;
     std::vector<std::string> files;
     while(std::getline(input, line_read))
     {
-        
-        size_t line_len = length(line_read); 
-        for(size_t idx = 0; idx <= line_len; idx++)
-        {
-            size_t nBytes = nBytesCode(line_read[idx]);
-            subtemp = line_read.substr(idx, nBytes);
-            idx += (nBytes - 1);
-            for(auto & tm : punct)
-            {
-                if(tm == subtemp) line_out.append(" ");
-                else line_out.append(subtemp);
-            }
-        }
-        files.push_back(line_out);
+#if 1
+        //std::locale::global(std::locale("chs"));
+        wstring Wstring = StringToWstring(line_read);
+        Wstring = std::regex_replace(Wstring,std::wregex(L"[^\u4E00-\u9FA5]"), std::wstring(L" "));
+        string converted_str = WstringToString(Wstring);
+#endif
+        files.push_back(converted_str);
     }
     input.close();
     //中文分词
@@ -104,7 +111,8 @@ void DictProducer::operatorCN(const string & filepath)
          words = _splitTool->cut(*iter); 
          for(auto & word : words)
          { 
-            push_dict(word);  
+            if(word == " ") continue;
+            else push_dict(word);  
          } 
     }
 }
@@ -147,19 +155,15 @@ void DictProducer::build_cn_index()
     size_t idx = 0;
     for(auto iter = dics.begin(); iter != dics.end(); ++iter)
     {
-        auto word = iter->first;
+        string  word = iter->first;
         /*这里是中文的拆分为单个字符*/
-#if 1
-        string subtemp;
-        size_t line_len = length(word); 
-        for(size_t idx = 0; idx != line_len; ++idx)
+        wstring temp_word = StringToWstring(word);
+        for(auto it = temp_word.begin(); it != temp_word.end(); ++it)
         {
-            size_t nBytes = nBytesCode(word[idx]);
-            subtemp = word.substr(idx, nBytes);
-            idx += (nBytes - 1);
-            _hashtable[subtemp].insert(idx);
+            wstring wstr;
+            wstr.push_back(*it);
+           _hashtable[WstringToString(wstr)].insert(idx); 
         }
-#endif
         idx++;
     }
 
@@ -236,7 +240,7 @@ void DictProducer::store_index(const char * filepath)
         output  << iter->first << " ";
         for(auto it = (iter->second).begin(); it != (iter->second).end(); ++it )
         {
-            output << *it << " ";
+            output << (*it) << " ";
         }
         output << "\n";
     }
