@@ -79,7 +79,7 @@ void do_service(int sockfd)
             exit(EXIT_SUCCESS);
         }
         read(sockfd, recvbuf, datalen);
-        printf("receive msg : %s",recvbuf);
+        printf("receive msg : %s\n",recvbuf);
 
         memset(recvbuf, 0, sizeof recvbuf);
         memset(sendbuf, 0, sizeof sendbuf);

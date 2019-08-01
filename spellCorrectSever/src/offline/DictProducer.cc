@@ -55,7 +55,7 @@ void DictProducer::build_cn_dict()
     for(auto & iter : _files)
     {
         cout << ">> files: " << iter << endl;
-        operatorCN(iter);
+        //operatorCN(iter);
     }
 }
 std::wstring DictProducer::StringToWstring(const std::string str)
@@ -295,7 +295,7 @@ void DictProducer::get_files()
         if(DT_DIR == p->d_type)
         {
             sprintf(tmpPath, "%s%s%s",_dir.c_str() , "/",p->d_name);
-            get_files();
+            //get_files();
         } else if(DT_REG == p->d_type)
         {
             sprintf(tmpPath, "%s%s%s", _dir.c_str(), "/", p->d_name);
