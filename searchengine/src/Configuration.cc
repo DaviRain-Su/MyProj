@@ -17,7 +17,6 @@ using std::map;
 using std::make_pair;
 using std::set;
 using std::mutex;
-
 #define ERROR_CHECK(ret, retVal, funcName)\
 {\
     if(ret == retVal){\
@@ -25,24 +24,9 @@ using std::mutex;
         perror(funcName);\
     }\
 }
+
 namespace wd
 {
-/*static 变量这里是定义*/
-Configuration::Autorelease Configuration::_autorelease{};
-Configuration * Configuration::_instance = nullptr;
-mutex Configuration::_mutex;
-/*双检查锁机制*/
-Configuration * Configuration::getInstance(const string & filepath)
-{
-    if(_instance == nullptr)
-    {
-        std::lock_guard<mutex> lock(_mutex); 
-        if(_instance == nullptr){
-            _instance = new Configuration(filepath);
-        }
-    }
-    return _instance;
-}
 /*ctr*/
 Configuration::Configuration(const string & filepath)
     :_filepath(filepath)
@@ -107,11 +91,23 @@ void  Configuration::getStopFilePath()
 {
     map<string,string> & ConfMap = getConfigMap();
     string stopwordpath =  ConfMap["my_stop_list"];
-    DirScanner scanner(stopwordpath);
-    scanner.operator()();/*构建文件集合*/
-
-    _stopfiles = scanner.files();/*返回文件集合*/
-    //get_files(stopwordpath);     
+    /*初始化stopWordList*/
+    get_files(stopwordpath);     
+}
+string  Configuration::getNewiPage()
+{
+    auto & ConfMap = getConfigMap();
+    return ConfMap["my_newipage"];
+}
+string Configuration::getOffset()
+{
+    auto & ConfMap = getConfigMap();
+    return ConfMap["my_newoffset"];
+}
+string Configuration::getInvertIndex()
+{
+    auto & ConfMap = getConfigMap();
+    return ConfMap["my_invertIndex"];
 }
 /*初始化set<string> _stopWordList*/
 set<string> & Configuration::getStopWordList()
@@ -164,14 +160,13 @@ void Configuration::showAll()
 void Configuration::show_stopWord()
 {
     getStopWordList();
-#if 0
+#if 1
     for(auto it = _stopWordList.begin(); it != _stopWordList.end(); ++it)
     {
         cout << " >> word :  " << *it << endl;
     }
 #endif
 }
-#if 0
 /*获取一个目录下的所有的文件路径存放到_stopfiles
  * 使用linux的系统调用接口实现，查找一个目录写的所有文件
  * 并拼装成一个个的文件路径*/
@@ -197,6 +192,5 @@ void Configuration::get_files(const string & filename)
     }
     closedir(dir);
 }
-#endif
 
 }

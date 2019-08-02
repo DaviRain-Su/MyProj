@@ -8,10 +8,11 @@ using std::string;
 namespace wd
 {
 
+class Configuration;
 class DirScanner
 {
 public:
-    DirScanner(const string & filepath);
+    DirScanner(Configuration & conf);
     ~DirScanner();
     
     void operator()();/*重载函数调用运算符，调用traverse*/
@@ -20,7 +21,7 @@ public:
     void traverse(const string & dirname);/*获取某一目录下的所有文件*/
 private:
     vector<string> _vecfiles;/*存储每个预料文件的绝对路径*/
-    string _filepath;/*某一个目录文件夹路径*/
+    Configuration & _conf;
 };
 
 }

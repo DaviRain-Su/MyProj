@@ -21,10 +21,10 @@ using std::cout;
 namespace wd
 {
 
-DirScanner::DirScanner(const string & filepath)
-: _filepath(filepath)
+DirScanner::DirScanner(Configuration & conf)
+: _conf(conf)
 {
-   cout << "DirScanner(const string & filepath)" << _filepath << endl;     
+   cout << "DirScanner(const string & filepath)"<< endl;     
 }
 
 DirScanner::~DirScanner()
@@ -34,7 +34,7 @@ DirScanner::~DirScanner()
 /*重载函数调用运算符*/
 void DirScanner::operator()()
 {
-    traverse(_filepath);
+    traverse(_conf.getRss());
 }
 /*返回设定的目录下的文件的路径集合*/
 vector<string> & DirScanner::files()
