@@ -97,6 +97,11 @@ int Configuration::threadNum()
     return stoi(ConfMap["my_thread_num"]);
     
 }
+string Configuration::getRss()
+{
+    auto & ConfMap = getConfigMap();
+    return ConfMap["my_rss_path"];
+}
 /*获取停词的文件路径*/
 void  Configuration::getStopFilePath()
 {
@@ -134,6 +139,8 @@ set<string> & Configuration::getStopWordList()
         input.close();
     }
     return _stopWordList;
+
+
 }
 
 void Configuration::showAll()
@@ -142,6 +149,7 @@ void Configuration::showAll()
     cout << ">> ip : " << ip() << endl;
     cout << ">> port : " << port() << endl;
     cout << ">> threadNum : " << threadNum() << endl;
+    cout << ">> rss path : " << getRss() << endl;
 #endif
     getStopFilePath();
     for(auto iter = _stopfiles.begin(); iter != _stopfiles.end(); ++iter)

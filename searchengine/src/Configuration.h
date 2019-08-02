@@ -28,7 +28,7 @@ public:
     std::string ip();
     int port();
     int threadNum();
-    
+    std::string getRss();
     void showAll(); /*测试接口打印所有信息*/
     void show_stopWord();/*获取停词文件路径*/
 
