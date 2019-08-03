@@ -12,10 +12,10 @@ using std::ofstream;
 
 namespace wd
 {
- PageLib::PageLib(Configuration & conf, DirScanner & dirscanner, FileProcessor & fileprocessor)
+PageLib::PageLib(Configuration & conf, DirScanner & dirscanner, FileProcessor & fileprocessor)
     : _conf(conf)
-    , _dirscanner(dirscanner)
-    , _fileprocessor(fileprocessor)
+      , _dirscanner(dirscanner)
+      , _fileprocessor(fileprocessor)
     {
         cout << "PageLib(DirSacnner&,FileProcessor&)" << endl;        
     }
@@ -30,7 +30,7 @@ void PageLib::create()
     vector<string> files;
     files =  _dirscanner.files();
     /*生成扫描的后文件存放到
-    文件 内容容器中*/
+      文件 内容容器中*/
     size_t  offset  = 0;
     size_t len = 0;
     for(size_t idx = 0; idx != files.size(); ++idx)
@@ -38,12 +38,12 @@ void PageLib::create()
         /*将有目录扫描器扫描的到的语料的文件教
          * 由 文件处理器处理后，返回的格式化的
          * 网页库温江内容存放到_vecFiles*/
-        
+
         string text = _fileprocessor.process(idx, files[idx]);
         len =  text.length();
-       _vecFiles.push_back(text);
-       _offsetLib[idx] = std::make_pair(offset, len);
-       offset = len + 1;
+        _vecFiles.push_back(text);
+        _offsetLib[idx] = std::make_pair(offset, len);
+        offset = len + 1;
     }
 
 }
