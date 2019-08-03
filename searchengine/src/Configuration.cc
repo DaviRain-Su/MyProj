@@ -99,10 +99,20 @@ string  Configuration::getNewiPage()
     auto & ConfMap = getConfigMap();
     return ConfMap["my_newipage"];
 }
+string Configuration::getPrecessNewiPage()
+{
+    auto & ConfMap = getConfigMap();
+    return ConfMap["my_Process_newipage"];
+}
 string Configuration::getOffset()
 {
     auto & ConfMap = getConfigMap();
     return ConfMap["my_newoffset"];
+}
+string Configuration::getProcessOffset()
+{
+    auto & ConfMap = getConfigMap();
+    return ConfMap["my_Process_newoffset"];
 }
 string Configuration::getInvertIndex()
 {
@@ -127,9 +137,9 @@ set<string> & Configuration::getStopWordList()
             cout << ">> fail open file " << *it << endl;
         }
         string key;/*停词集合的key*/
-        while(std::getline(input,key))
+        while(input >> key)
         {
-            cout<<key<<endl;
+           // cout<<key<<endl;
             _stopWordList.insert(key);
         }
         input.close();

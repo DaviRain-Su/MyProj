@@ -1,9 +1,12 @@
-#include "PageLibPreprocessor.h"
+#include "WordSegmentation.h"
 
 namespace wd
 {
 
-vector<string> PageLibPreprocessor::cut(const string & sentence)
+
+
+vector<string> WordSegmentation::cut(const string & sentence)
+
 {
     vector<string> words;
     string s = sentence;

@@ -22,22 +22,21 @@ public:
     int getDocId();/*获取文档id*/
     string getDoc();/*获取文档*/
     map<string, int> & getWordMap();/*获取文档的词频统计map*/
+    /*比较函数对象*/
+    struct Compare{
+        bool operator()(std::pair<string, int> & lhs, std::pair<string, int> & rhs)
+        {
+            return lhs.second > rhs.second;
+        }
+    };
 
 private:
     void processDoc(const string  & doc, Configuration & conf, WordSegmentation & jieba);/*对格式化文档进行处理*/
     void calcTopK(vector<string> & WordsVec, int k, set<string> & stopWordList);/*求取文档的top词集*/
 
 private:
-    class Compare{
-        bool operator()(std::pair<string, int> & lhs, std::pair<string, int> & rhs)
-        {
-            return lhs.second > rhs.second;
-        }
-    };
     const static int TOPK_NUMBER = 20;
     string _doc;/*整片文档包括xml*/
-    //Configuration & _conf;
-    //WordSegmentation & _jieba;
     int _docid; /*文档id*/
     string _docTitle;/*文档标题*/
     string _docUrl;/*文档URL*/

@@ -12,6 +12,7 @@ class Configuration
 {
 public:
    
+    
     Configuration(const std::string & filepath  = "../conf/myconf.conf");
     ~Configuration();
 
@@ -21,7 +22,9 @@ public:
     int threadNum();
     std::string getRss();
     std::string getNewiPage();
+    std::string getPrecessNewiPage();
     std::string getOffset();
+    std::string getProcessOffset();
     std::string getInvertIndex();
     void showAll(); /*测试接口打印所有信息*/
     void show_stopWord();/*获取停词文件路径*/
