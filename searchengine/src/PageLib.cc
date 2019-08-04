@@ -29,21 +29,33 @@ void PageLib::create()
     _dirscanner.operator()();/*目录文件扫描器扫描*/
     vector<string> files;
     files =  _dirscanner.files();
+#if 1
+    for(auto elem :files)
+    {
+        cout << "@@ >> " << elem << endl;
+    }
+#endif
     /*生成扫描的后文件存放到
       文件 内容容器中*/
-    size_t  offset  = 0;
-    size_t len = 0;
+    /*这里仅仅是为了初始化_vecfiles容器*/
     for(size_t idx = 0; idx != files.size(); ++idx)
     {
         /*将有目录扫描器扫描的到的语料的文件教
          * 由 文件处理器处理后，返回的格式化的
          * 网页库温江内容存放到_vecFiles*/
 
-        string text = _fileprocessor.process(idx, files[idx]);
-        len =  text.length();
-        _vecFiles.push_back(text);
+        vector<string> text = _fileprocessor.process(/*idx,*/ files[idx]);
+        /*将一个文件中所有的文章插入到文件容器中_vecfiles*/
+        _vecFiles.insert(_vecFiles.end(), text.begin(), text.end());
+    }
+    /*初始话网页偏移库*/
+    int offset = 0;
+    int len = 0;
+    for(size_t idx = 0; idx != _vecFiles.size(); ++idx)
+    {
+        len = _vecFiles[idx].size();
         _offsetLib[idx] = std::make_pair(offset, len);
-        offset = len + 1;
+        offset += len; 
     }
 
 }

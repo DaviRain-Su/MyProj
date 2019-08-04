@@ -28,6 +28,10 @@ private:
     void cutRedundantPage();/*对冗余网页进行去重*/
     void buildInvertIndexTable();/*创建倒排索引表*/
     void storeOnDisk();/*将经过预处理之后的网页库， 位置偏移库和倒排索引表写会到磁盘上*/
+   /*检测值是否合法*/
+    bool is_infinite(const double & value);
+    bool is_nan(const double & value);
+    bool is_valid(const double &value);
 private:
     
     Configuration & _conf; /*配置文件对象的引用*/

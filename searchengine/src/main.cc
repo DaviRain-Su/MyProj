@@ -22,7 +22,7 @@ void test0()
 
     pag.create();
     pag.store();
-    conf.show_stopWord();
+    //conf.show_stopWord();
 
 }
 #endif
@@ -31,8 +31,6 @@ void test1()
     /*网页库的预处理， 去除重复的网页库*/
     Configuration conf;
     WordSegmentation jieba; 
-    
-    
     
     PageLibPreprocessor pageProcess(conf,jieba); 
     pageProcess.doProcess();

@@ -6,6 +6,7 @@
 #include "WebPage.h"
 
 #include <cmath>//log()
+#include <limits.h>//numberic_limits
 #include <iostream>
 using std::endl;
 using std::cout;
@@ -84,9 +85,8 @@ void PageLibPreprocessor::readInfromFile()/*根据配置信息读取网页库和
     /*处理每一篇读取出来的文章*/
     for(string & doc : vecfiles)
     {
-        cout << "********************************************************* " << doc << endl;
-        WebPage webpage(doc, _conf, _jieba);
-        _pageLib.push_back(webpage);
+       // cout << "********************************************************* " << doc << endl;
+        _pageLib.push_back(WebPage(doc, _conf, _jieba));
     }
 
 
@@ -94,6 +94,7 @@ void PageLibPreprocessor::readInfromFile()/*根据配置信息读取网页库和
 void PageLibPreprocessor::cutRedundantPage()/*对冗余网页进行去重*/
 {
     /*重新将去重后的网页存储到_pageLib中*/
+#if 0
     set<WebPage> pagelib(_pageLib.begin(), _pageLib.end());
     _pageLib.erase(_pageLib.begin(), _pageLib.end());
     _pageLib.insert(_pageLib.begin(), pagelib.begin(), pagelib.end());
@@ -106,6 +107,32 @@ void PageLibPreprocessor::cutRedundantPage()/*对冗余网页进行去重*/
         _offsetLib[web.getDocId()] = std::make_pair(offset, len);
         offset += len;
     }
+#endif
+#if 1
+    vector<WebPage> pagelib;
+    for(auto  idx = _pageLib.begin(); idx != _pageLib.end(); ++idx)
+    {
+        for(auto idy = idx + 1; idy != _pageLib.end(); ++idy)
+        {
+            if((*idx) == (*idy))
+            {
+                if(idx->getDocId()<idy->getDocId())
+                    _pageLib.erase(idy);
+            }
+        }
+    }
+  //  cout << "_pageLib.size() " << _pageLib.size() << endl;
+    /*重新赋值改变网易偏移库的*/
+    _offsetLib.erase(_offsetLib.begin(), _offsetLib.end());
+    size_t offset = 0;
+    for(auto & web : _pageLib)
+    {
+        int len = web.getDoc().size();
+        _offsetLib[web.getDocId()] = std::make_pair(offset, len);
+        offset += len;
+    }
+  //  cout << "_pageLib.size() ** " << _pageLib.size() << endl;
+#endif
 
 }
 void PageLibPreprocessor::buildInvertIndexTable()/*创建倒排索引表*/
@@ -117,7 +144,7 @@ void PageLibPreprocessor::buildInvertIndexTable()/*创建倒排索引表*/
         auto smallMap = web.getWordMap();
         for(auto it = smallMap.begin(); it != smallMap.end(); ++it)
         {
-            bigMap[it->first] += it->second;
+            bigMap[it->first]++;
         }/*将大map初始化*/
     }
 
@@ -135,23 +162,26 @@ void PageLibPreprocessor::buildInvertIndexTable()/*创建倒排索引表*/
              * */
             /*依次每个单词的出现的频率*/
             int elem_TF = it->second;/*得到这个单词在这一篇文章中词频*/
-            int total_DF = bigMap[it->first];/*得到这个单词在所有文章中的词频*/
+            int total_DF = bigMap[it->first];/*得到这个单词在所有文章中的是否出现过*/
+
             double IDF;
-            IDF = log(page_cnt / (total_DF + 1))/log(2);/*计算的以2为底的对数*/
+            IDF = log2(page_cnt / (total_DF + 1));/*计算的以2为底的对数*/
             double w = elem_TF * IDF;
             weight.push_back(w);/*将一片文章中各个单词计算得到的权重存储到weight*/
         }
         /*计算需要归一化的底*/
-        double totalWegit2 = 0;
-        for(auto elem : weight)
+        long double totalWegit2 = 0;
+        for(auto it = weight.begin(); it != weight.end(); ++it)
         {
-            totalWegit2 += elem * elem;
+            totalWegit2 += (*it)*(*it);
         }
+        
         /*对一篇文章中的单词的权重进行归一化处理*/
         vector<double> norm_weight(smallMap.size(), 0.0);
         for(auto elem : weight)/*针对每一权重进行归一化后存到归一化后的向量中*/
         {
-            double tmp = elem / sqrt(totalWegit2);
+            double tmp = elem / std::sqrt(totalWegit2);
+            cout << "#WEIGHT# " << tmp << " #tmp# " << elem << " #totalWegit2# " << totalWegit2 << endl;
             norm_weight.push_back(tmp);/*将归一化后的权重存储到向量中*/
         }
 

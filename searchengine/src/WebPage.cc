@@ -14,13 +14,13 @@ namespace wd
 WebPage::WebPage(const string & doc, Configuration & conf, WordSegmentation & jieba)
     : _doc(doc)
     {
-        cout << " WebPage(string &, Configuration&, WordSegmentation&)" << endl;
+       // cout << " WebPage(string &, Configuration&, WordSegmentation&)" << endl;
         /*处理一篇文章*/
         processDoc(doc, conf, jieba);
     }
 WebPage::~WebPage()
 {
-    cout << "~WebPage()" << endl;
+   // cout << "~WebPage()" << endl;
 }
 int WebPage::getDocId()
 {
@@ -136,6 +136,10 @@ void WebPage::processDoc(const string & doc, Configuration & conf, WordSegmentat
     set<string> stopWordList = conf.getStopWordList();
     /*对一篇文章的内容进行切分， 返回的是分词之后的 vector<string>*/
     vector<string> words = jieba.cut(_docContent);
+#if 0
+    for(auto & word : words)
+        cout << word << endl;
+#endif
     /*将一篇文章中的前20个出现频率最高的词汇存储到 _topWord
      * TOPK_NUMBER 是设定的要存取的频率最高的多少的单词*/
     calcTopK(words, TOPK_NUMBER , stopWordList);
@@ -156,7 +160,7 @@ void WebPage::calcTopK(vector<string>& WordsVec, int k, set<string> & stopWordLi
     }
     /*存放的的pair 是每个单词一节单词对应的词频
      * pair <sring, int> */
-    vector<std::pair<string, int>> wordvec;
+    vector<std::pair<string, int>> wordvec(k,{"",0});
     for(auto it : _wordsMap) /*_wordsMap 的每一个元素的类型是pair<string, int> */
     {
         /*将_wordMap中的每元素类型, 存放到wordvec, vecs会根据每个单词出现的词频进行排序*/
@@ -169,22 +173,41 @@ void WebPage::calcTopK(vector<string>& WordsVec, int k, set<string> & stopWordLi
     for(int i = 0; i < k; i++)
     {
         /*存储前k个单词到 vector<string> _topWord*/
-        _topWord.push_back(wordvec[i].first);
+        if(wordvec[i].first == "")
+            break;
+        else
+            _topWord.push_back(wordvec[i].first);
     }
 }
 /*判断篇文章是否相同的函数*/
 bool operator==(const WebPage & lhs, const WebPage & rhs)
 {
     int critial_value = 11;
+#if 0
     set<string> none_repate_word(lhs._topWord.begin(),lhs._topWord.end());
     for(auto & word : rhs._topWord)
     {
         none_repate_word.insert(word);
     }
+    cout << "none_repate_word = " << none_repate_word.size() << endl;
     int count_repate = 2 * lhs._topWord.size() - none_repate_word.size();
     if(count_repate > critial_value) return true; /*若两篇文章中的top20个单词中有超过11的单词相同的则
     认为两篇文章是相同*/
     else return false;
+#endif
+    int total_word_cnt = 0;
+    for(auto word1: lhs._topWord)
+    {
+        for(auto word2 : rhs._topWord)
+        {
+            if(word1 == word2)
+                total_word_cnt++;
+        }
+    }
+    if(total_word_cnt > critial_value)
+        return true;
+    else
+        return false;
 }
 bool operator<(const WebPage & lhs, const WebPage & rhs)
 {
